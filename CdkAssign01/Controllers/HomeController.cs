@@ -11,6 +11,22 @@ namespace CdkAssign01.Controllers
 {
     public class HomeController : Controller
     {
+        ICustomersRepository _customersRepo;
+        IOrdersRepository _ordersRepo;
+
+        //Used for Dependency Injection
+        public HomeController(ICustomersRepository customersRepo, IOrdersRepository ordersRepo)
+        {
+            if (customersRepo == null)
+                throw new ArgumentNullException("customersRepo");
+
+            if (ordersRepo == null)
+                throw new ArgumentNullException("ordersRepo");
+
+            _customersRepo = customersRepo;
+            _ordersRepo = ordersRepo;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -25,8 +41,8 @@ namespace CdkAssign01.Controllers
             bool success = int.TryParse(myDesiredCustomerId, out customerId);
             if (success)
             {
-                CustomerDTO customerDTO = CdkAssign01.BAL.CustomersRepository.GetCustomerById(customerId);
-                OrdersDTO ordersDTO = CdkAssign01.BAL.OrdersRepository.GetOrdersForCustomer(customerId);
+                CustomerDTO customerDTO = _customersRepo.GetCustomerById(customerId);
+                OrdersDTO ordersDTO = _ordersRepo.GetOrdersForCustomer(customerId);
                 ordersListViewModel = ConvertOrdersDTOToOrdersListViewModel(ordersDTO);
                 AddCustomerDTOToOrdersListViewModel(ordersListViewModel, customerDTO);
                 if (!ordersListViewModel.Customer.IsValidCustomer)

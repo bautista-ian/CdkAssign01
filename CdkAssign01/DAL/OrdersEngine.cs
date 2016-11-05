@@ -10,28 +10,29 @@ using CdkAssign01.Models.DTO;
 
 namespace CdkAssign01.DAL
 {
-    public class OrdersEngine
+    public class OrdersEngine: DataHelper, IOrdersEngine
     {
-        public static DataSet GetOrdersForCustomer(int customerId)
+        public OrdersEngine()
         {
-            DataSet ds = new DataSet();
-            var constr = ConfigurationManager.ConnectionStrings["CDKConnection"].ConnectionString;
-            var conn = new SqlConnection(constr);
-            var cmd = new SqlCommand("GetOrdersForCustomers", conn);
+            ConnectionString = ConfigurationManager.ConnectionStrings["CDKConnection"].ConnectionString;
+        }
 
-            cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
-
-            var returnParameter = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
+        public DataSet GetOrdersForCustomer(int customerId)
+        {
+            SqlParameter customerIdParameter = new SqlParameter("@CustomerId", customerId);
+            SqlParameter returnParameter = new SqlParameter("@ReturnVal", customerId);
             returnParameter.Direction = ParameterDirection.ReturnValue;
 
-            var da = new SqlDataAdapter(cmd);
-            cmd.CommandType = CommandType.StoredProcedure;
-            da.Fill(ds);
+            SqlParameterCollection outParameters;
+            DataSet ds = GetDataSet("GetOrdersForCustomers", CommandType.StoredProcedure, out outParameters, customerIdParameter, returnParameter);
 
-            var result = returnParameter.Value;
+            var result = outParameters[returnParameter.ParameterName].Value;
 
             return ds;
+
         }
+
+        
     }
 
 }

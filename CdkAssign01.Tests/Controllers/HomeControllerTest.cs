@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CdkAssign01;
 using CdkAssign01.Controllers;
+using CdkAssign01.BAL;
 
 namespace CdkAssign01.Tests.Controllers
 {
@@ -13,10 +14,10 @@ namespace CdkAssign01.Tests.Controllers
     public class HomeControllerTest
     {
         [TestMethod]
-        public void Index()
+        public void Index(ICustomersRepository customersRepo, IOrdersRepository ordersRepo)
         {
             // Arrange
-            HomeController controller = new HomeController();
+            HomeController controller = new HomeController(customersRepo, ordersRepo);
 
             // Act
             ViewResult result = controller.Index() as ViewResult;

@@ -11,13 +11,22 @@ using CdkAssign01.Utility;
 
 namespace CdkAssign01.BAL
 {
-    public class OrdersRepository
+    public class OrdersRepository: IOrdersRepository
     {
+        IOrdersEngine _ordersEngine;
 
-
-        public static OrdersDTO GetOrdersForCustomer(int customerId)
+        //Used for Dependency Injection
+        public OrdersRepository(IOrdersEngine ordersEngine)
         {
-            DataSet ds = OrdersEngine.GetOrdersForCustomer(customerId);
+            if (ordersEngine == null)
+                throw new ArgumentNullException("ordersEngine");
+
+            _ordersEngine = ordersEngine;
+        }
+
+        public OrdersDTO GetOrdersForCustomer(int customerId)
+        {
+            DataSet ds = _ordersEngine.GetOrdersForCustomer(customerId);
 
             OrdersDTO ordersDTO = new OrdersDTO();
 
